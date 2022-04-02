@@ -4,6 +4,14 @@ const Button = (props) => {
   return <button onClick={props.onClick}>{props.text}</button>
 }
 
+const StatisticLine = (props) => {
+  return (
+    <p>
+      {props.text} {props.value} {props.text2}
+    </p>
+  )
+}
+
 const Statistics = ({ feedbackCount: [good, neutral, bad] }) => {
   const totalFeedbackCount = good + neutral + bad
   const [goodScore, neutralScore, badScore] = [1, 0, -1]
@@ -13,12 +21,12 @@ const Statistics = ({ feedbackCount: [good, neutral, bad] }) => {
   if (good + neutral + bad > 0) {
     return (
       <>
-        <p>Good Feedback amount is: {good}</p>
-        <p>Neutral Feedback amount is: {neutral}</p>
-        <p>Bad Feedback amount is: {bad}</p>
-        <p>Total number of Feedbacks is: {totalFeedbackCount}</p>
-        <p>The average score is: {average}</p>
-        <p>Positive feedback percentage is: {positivePercentage}%</p>
+        <StatisticLine text="Good: " value={good} />
+        <StatisticLine text="Neutral: " value={neutral} />
+        <StatisticLine text="Bad: " value={bad} />
+        <StatisticLine text="Total number of Feedbacks is: " value={totalFeedbackCount} />
+        <StatisticLine text="The average score is: " value={average} />
+        <StatisticLine text="Positive feedback percentage is: " value={positivePercentage} text2="%" />
       </>
     )
   }
