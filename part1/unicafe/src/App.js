@@ -4,8 +4,38 @@ const Button = (props) => {
   return <button onClick={props.onClick}>{props.text}</button>
 }
 
+const Total = ({ feedbackCount: [good, neutral, bad] }) => {
+  const total = good + neutral + bad
+  return (
+    <>
+      <br />
+      <p>Total number of Feedbacks is - {total}</p>
+    </>
+  )
+}
+
+const Average = ({ feedbackCount: [good, neutral, bad] }) => {
+  const [goodScore, neutralScore, badScore] = [1, 0, -1]
+  const totalFeedbackCount = good + neutral + bad
+  const average = (goodScore * good + neutralScore * neutral + badScore * bad) / totalFeedbackCount
+  return (
+    <>
+      <p>The average score is {average}</p>
+    </>
+  )
+}
+
+const Positive = ({ feedbackCount: [good, neutral, bad] }) => {
+  const totalFeedbackCount = good + neutral + bad
+  const positivePercentage = (good / totalFeedbackCount) * 100
+  return (
+    <>
+      <p>The average score is {positivePercentage}%</p>
+    </>
+  )
+}
+
 const App = () => {
-  // save clicks of each button to its own state
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
@@ -42,6 +72,12 @@ const App = () => {
       <p>Neutral Feedback amount is - {neutral}</p>
       <br />
       <p>Bad Feedback amount is - {bad}</p>
+
+      <Total feedbackCount={[good, neutral, bad]} />
+
+      <Average feedbackCount={[good, neutral, bad]} />
+
+      <Positive feedbackCount={[good, neutral, bad]} />
     </div>
   )
 }
