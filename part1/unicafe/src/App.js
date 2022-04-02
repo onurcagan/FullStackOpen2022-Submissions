@@ -6,9 +6,14 @@ const Button = (props) => {
 
 const StatisticLine = (props) => {
   return (
-    <p>
-      {props.text} {props.value} {props.text2}
-    </p>
+    <>
+      <tr>
+        <td>{props.text}</td>
+        <td>
+          {props.value} {props.text2}
+        </td>
+      </tr>
+    </>
   )
 }
 
@@ -21,12 +26,14 @@ const Statistics = ({ feedbackCount: [good, neutral, bad] }) => {
   if (good + neutral + bad > 0) {
     return (
       <>
-        <StatisticLine text="Good: " value={good} />
-        <StatisticLine text="Neutral: " value={neutral} />
-        <StatisticLine text="Bad: " value={bad} />
-        <StatisticLine text="Total number of Feedbacks is: " value={totalFeedbackCount} />
-        <StatisticLine text="The average score is: " value={average} />
-        <StatisticLine text="Positive feedback percentage is: " value={positivePercentage} text2="%" />
+        <table>
+          <StatisticLine text="Good: " value={good} />
+          <StatisticLine text="Neutral: " value={neutral} />
+          <StatisticLine text="Bad: " value={bad} />
+          <StatisticLine text="All: " value={totalFeedbackCount} />
+          <StatisticLine text="Average: " value={average} />
+          <StatisticLine text="Positive: " value={positivePercentage} text2="%" />
+        </table>
       </>
     )
   }
