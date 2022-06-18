@@ -5,6 +5,7 @@ import axios from 'axios'
 export const App = () => {
   const [newFilter, setNewFilter] = useState('')
   const [countries, setNewCountry] = useState([])
+  const api_key = process.env.REACT_APP_WEATHER_API_KEY
 
   useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all').then((response) => {
@@ -12,13 +13,26 @@ export const App = () => {
     })
   }, [])
 
-  const filter = countries.filter((country) => country.name.common.toLowerCase().includes(newFilter.toLowerCase()))
+  const filteredCountries = countries.filter((country) => country.name.common.toLowerCase().includes(newFilter.toLowerCase()))
 
-  const filteredCountries = () => {
+  const countriesToShow = () => {
     if (newFilter === '') return 'Please start typing a country name.'
-    if (filter.length === 1) return <Country filter={filter[0]} />
-    if (filter.length <= 10) return filter.map((item, index) => <div key={index}>{item.name.common}</div>)
-    if (filter.length > 10) return 'Too many countries match your request, keep on typing.'
+    if (filteredCountries.length === 1) return <Country filter={filteredCountries[0]} />
+    if (filteredCountries.length <= 10)
+      return filteredCountries.map((item, index) => (
+        <div key={index}>
+          {item.name.common}
+          <button
+            style={{ marginLeft: 10 + 'px' }}
+            onClick={() => {
+              setNewFilter(`${item.name.common}`)
+            }}
+          >
+            Show
+          </button>
+        </div>
+      ))
+    if (filteredCountries.length > 10) return 'Too many countries match your request, keep on typing.'
     else return 'Unhandled situation occured, what did you do? Lol.'
   }
 
@@ -27,7 +41,7 @@ export const App = () => {
       <div>
         Find countries: <input value={newFilter} onChange={(e) => setNewFilter(e.target.value)}></input>
       </div>
-      <div>{filteredCountries()}</div>
+      <div>{countriesToShow()}</div>
     </>
   )
 }
