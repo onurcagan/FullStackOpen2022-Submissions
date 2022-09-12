@@ -1,18 +1,39 @@
-export const Country = ({ filter }) => {
-  const obj = filter.languages
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+
+export const Country = ({ country }) => {
+  const [weatherData, setWeatherData] = useState(null)
+  const obj = country.languages
   const result = Object.keys(obj).map((key) => [obj[key]])
+  const api_key = process.env.REACT_APP_WEATHER_API_KEY
+  const [countryName, countryCode] = [country.name.common, country.altSpellings[0]]
+
+  useEffect(() => {
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?q=${countryName},${countryCode}&appid=${api_key}&units=metric`)
+      .then((response) => setWeatherData(response.data))
+  }, [])
+
   return (
     <div>
-      <h1>{filter.name.common}</h1> <br />
-      <div>Capital: {filter.capital}</div>
-      <div>Area: {filter.area}</div> <br />
-      <div>Languages: {filter.languages[0]}</div>
+      <h1>{country.name.common}</h1> <br />
+      <div>Capital: {country.capital}</div>
+      <div>Area: {country.area} km²</div> <br />
+      <div>Languages: {country.languages[0]}</div>
       <ul>
         {result.map((language, id) => {
           return <li key={id}>{language}</li>
         })}
       </ul>
-      <img src={`${filter.flags.png}`} alt="Country Flag" width={300} height={200}></img>
+      <img src={`${country.flags.png}`} alt="Country Flag" width={300} height={200}></img>
+      <div style={{ marginTop: '20px' }}>
+        {country.name.common} feels like {weatherData?.main?.feels_like} °C.
+        <p>
+          Don't wanna be bothered with checking out the structure of the api for fetching a piece of png/jpg whatever that icon
+          is.
+        </p>
+        <div>Wind is at a speed of {weatherData?.wind?.speed}m/s.</div>
+      </div>
     </div>
   )
 }

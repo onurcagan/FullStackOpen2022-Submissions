@@ -5,7 +5,6 @@ import axios from 'axios'
 export const App = () => {
   const [newFilter, setNewFilter] = useState('')
   const [countries, setNewCountry] = useState([])
-  const api_key = process.env.REACT_APP_WEATHER_API_KEY
 
   useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all').then((response) => {
@@ -17,7 +16,7 @@ export const App = () => {
 
   const countriesToShow = () => {
     if (newFilter === '') return 'Please start typing a country name.'
-    if (filteredCountries.length === 1) return <Country filter={filteredCountries[0]} />
+    if (filteredCountries.length === 1) return <Country country={filteredCountries[0]} />
     if (filteredCountries.length <= 10)
       return filteredCountries.map((item, index) => (
         <div key={index}>
@@ -33,7 +32,7 @@ export const App = () => {
         </div>
       ))
     if (filteredCountries.length > 10) return 'Too many countries match your request, keep on typing.'
-    else return 'Unhandled situation occured, what did you do? Lol.'
+    else return 'Unhandled situation occurred, what did you do? Lol.'
   }
 
   return (
