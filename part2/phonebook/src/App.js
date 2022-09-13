@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import People from './components/People'
+import { People } from './components/People.js'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
-import { createNewPerson, getPeople } from './services/PeopleRequests'
+import { createNewPerson, deletePerson, getPeople } from './services/PeopleRequests'
 
 const App = () => {
   const [people, setPeople] = useState([])
@@ -39,6 +39,14 @@ const App = () => {
     setNewPhone('')
   }
 
+  const deleteButtonOnClick = (id) => {
+    if (window.confirm('are you sure about this?')) {
+      deletePerson(id)
+      setPeople(people.filter((p) => p.id !== id))
+    }
+    return
+  }
+
   const personsFiltered =
     newFilter === '' ? people : people.filter((person) => person.name.toLowerCase().includes(newFilter.toLowerCase()))
 
@@ -49,7 +57,7 @@ const App = () => {
       <h3>Add a new Person</h3>
       <PersonForm onSubmit={addPerson} newName={newName} newPhone={newPhone} setNewName={setNewName} setNewPhone={setNewPhone} />
       <h3>Numbers</h3>
-      <People filter={personsFiltered} />
+      <People filter={personsFiltered} deleteButtonOnClick={deleteButtonOnClick} />
     </div>
   )
 }

@@ -10,3 +10,7 @@ export const getPeople = () => {
 export const createNewPerson = (personObject) => {
   axios.post(serverUrl, personObject).catch((e) => console.error(e))
 }
+
+export const deletePerson = (id) => {
+  axios.delete(`${serverUrl}/${id}`).catch((e) => console.error(e))
+}
