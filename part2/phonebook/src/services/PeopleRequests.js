@@ -12,5 +12,13 @@ export const createNewPerson = (personObject) => {
 }
 
 export const deletePerson = (id) => {
-  axios.delete(`${serverUrl}/${id}`).catch((e) => console.error(e))
+  axios.delete(`${serverUrl}/${id}`).catch((e) => {
+    alert("seems we don't have this note so we can't delete it.")
+    return console.error(e)
+  })
+}
+
+export const updatePerson = (id, newPerson) => {
+  const request = axios.put(`${serverUrl}/${id}`, newPerson)
+  return request.then((response) => response.data)
 }

@@ -1,5 +1,3 @@
-import { deletePerson } from '../services/PeopleRequests'
-
 export const People = ({ filter, deleteButtonOnClick }) => {
   return (
     <div>

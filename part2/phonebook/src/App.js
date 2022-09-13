@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { People } from './components/People.js'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
-import { createNewPerson, deletePerson, getPeople } from './services/PeopleRequests'
+import { createNewPerson, deletePerson, getPeople, updatePerson } from './services/PeopleRequests'
 
 const App = () => {
   const [people, setPeople] = useState([])
@@ -23,7 +23,16 @@ const App = () => {
     }
 
     if (people.some((e) => e.name === newName)) {
-      window.alert(`${newName} is already added to the phonebook.`)
+      if (window.confirm(`${newName} is already added to the phonebook, would you like to update their phone number?`)) {
+        const matchedExistingPerson = people.filter((person) => person.name === newName)[0]
+        const updatedPerson = { ...matchedExistingPerson, number: newPhone }
+
+        updatePerson(matchedExistingPerson.id, updatedPerson)
+
+        setPeople(people.map((person) => (person.id !== matchedExistingPerson.id ? person : updatedPerson)))
+        setNewName('')
+        setNewPhone('')
+      }
       return
     }
 
