@@ -16,8 +16,6 @@ export const Country = ({ country }) => {
 
   const weatherIconUrl = `http://openweathermap.org/img/wn/${weatherData?.weather?.[0]?.icon}@2x.png`
 
-  console.log(weatherIconUrl, weatherData)
-
   return (
     <div>
       <h1>{country.name.common}</h1> <br />
