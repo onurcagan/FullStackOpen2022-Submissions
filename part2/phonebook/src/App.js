@@ -1,20 +1,17 @@
 import { useState, useEffect } from 'react'
-import Persons from './components/Persons'
+import People from './components/People'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
-import axios from 'axios'
+import { createNewPerson, getPeople } from './services/PeopleRequests'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [people, setPeople] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [newFilter, setNewFilter] = useState('')
-  const serverUrl = 'http://localhost:3001/persons '
 
   useEffect(() => {
-    axios.get(serverUrl).then((response) => {
-      setPersons(response.data)
-    })
+    getPeople().then((person) => setPeople(person))
   }, [])
 
   const addPerson = (event) => {
@@ -25,7 +22,7 @@ const App = () => {
       return
     }
 
-    if (persons.some((e) => e.name === newName)) {
+    if (people.some((e) => e.name === newName)) {
       window.alert(`${newName} is already added to the phonebook.`)
       return
     }
@@ -34,15 +31,16 @@ const App = () => {
       name: newName,
       number: newPhone,
     }
-    axios.post(serverUrl, personObject).catch((e) => console.error(e))
 
-    setPersons(persons.concat(personObject))
+    createNewPerson(personObject)
+
+    setPeople(people.concat(personObject))
     setNewName('')
     setNewPhone('')
   }
 
   const personsFiltered =
-    newFilter === '' ? persons : persons.filter((person) => person.name.toLowerCase().includes(newFilter.toLowerCase()))
+    newFilter === '' ? people : people.filter((person) => person.name.toLowerCase().includes(newFilter.toLowerCase()))
 
   return (
     <div>
@@ -51,7 +49,7 @@ const App = () => {
       <h3>Add a new Person</h3>
       <PersonForm onSubmit={addPerson} newName={newName} newPhone={newPhone} setNewName={setNewName} setNewPhone={setNewPhone} />
       <h3>Numbers</h3>
-      <Persons filter={personsFiltered} />
+      <People filter={personsFiltered} />
     </div>
   )
 }

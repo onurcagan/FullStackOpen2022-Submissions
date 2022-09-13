@@ -1,4 +1,4 @@
-const Persons = ({ filter }) => {
+const People = ({ filter }) => {
   return (
     <div>
       {filter.map((p) => {
@@ -12,4 +12,4 @@ const Persons = ({ filter }) => {
   )
 }
 
-export default Persons
+export default People
