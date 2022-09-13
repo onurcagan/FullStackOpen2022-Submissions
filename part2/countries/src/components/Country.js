@@ -14,6 +14,10 @@ export const Country = ({ country }) => {
       .then((response) => setWeatherData(response.data))
   }, [])
 
+  const weatherIconUrl = `http://openweathermap.org/img/wn/${weatherData?.weather?.[0]?.icon}@2x.png`
+
+  console.log(weatherIconUrl, weatherData)
+
   return (
     <div>
       <h1>{country.name.common}</h1> <br />
@@ -29,8 +33,7 @@ export const Country = ({ country }) => {
       <div style={{ marginTop: '20px' }}>
         {country.name.common} feels like {weatherData?.main?.feels_like} °C.
         <p>
-          Don't wanna be bothered with checking out the structure of the api for fetching a piece of png/jpg whatever that icon
-          is.
+          <img src={weatherIconUrl} alt="kekw"></img>
         </p>
         <div>Wind is at a speed of {weatherData?.wind?.speed}m/s.</div>
       </div>
