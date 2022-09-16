@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const serverUrl = 'http://localhost:3001/persons'
+const serverUrl = 'http://localhost:3001/people'
 
 export const getPeople = () => {
   const request = axios.get(serverUrl)
@@ -8,7 +8,7 @@ export const getPeople = () => {
 }
 
 export const createNewPerson = (personObject) => {
-  axios.post(serverUrl, personObject).catch((e) => console.error(e))
+  return axios.post(serverUrl, personObject).catch((e) => console.error(e))
 }
 
 export const deletePerson = (id) => {
