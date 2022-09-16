@@ -10,6 +10,7 @@ export const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const [notificationMessage, setNotificationMessage] = useState('')
 
   useEffect(() => {
@@ -30,8 +31,9 @@ export const App = () => {
         const updatedPerson = { ...matchedExistingPerson, number: newPhone }
 
         updatePerson(matchedExistingPerson.id, updatedPerson)
+          .then(setPeople(people.map((person) => (person.id !== matchedExistingPerson.id ? person : updatedPerson))))
+          .catch(setErrorMessage(`User ${newName} has already been deleted from the server.`))
 
-        setPeople(people.map((person) => (person.id !== matchedExistingPerson.id ? person : updatedPerson)))
         setNewName('')
         setNewPhone('')
       }
@@ -66,7 +68,13 @@ export const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      {notificationMessage && <NotificationMessage notificationMessage={notificationMessage} />}
+      {(notificationMessage || errorMessage) && (
+        <NotificationMessage
+          notificationMessage={notificationMessage}
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
+      )}
       <Filter newFilter={newFilter} setNewFilter={setNewFilter} />
       <h3>Add a new Person</h3>
       <PersonForm onSubmit={addPerson} newName={newName} newPhone={newPhone} setNewName={setNewName} setNewPhone={setNewPhone} />
