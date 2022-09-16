@@ -32,7 +32,7 @@ export const App = () => {
 
         updatePerson(matchedExistingPerson.id, updatedPerson)
           .then(setPeople(people.map((person) => (person.id !== matchedExistingPerson.id ? person : updatedPerson))))
-          .catch(setErrorMessage(`User ${newName} has already been deleted from the server.`))
+          .catch((e) => e.response.status === 404 && setErrorMessage(`User ${newName} has already been deleted from the server.`))
 
         setNewName('')
         setNewPhone('')

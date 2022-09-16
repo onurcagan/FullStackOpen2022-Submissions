@@ -3,7 +3,7 @@ export const People = ({ filter, deleteButtonOnClick }) => {
     <div>
       {filter.map((p) => {
         return (
-          <div key={p.id}>
+          <div key={p.name}>
             {p.name} - {p.number}
             <button style={{ marginLeft: '10px' }} onClick={() => deleteButtonOnClick(p.id)}>
               delete
