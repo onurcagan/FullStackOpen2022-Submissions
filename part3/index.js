@@ -57,29 +57,28 @@ app.delete(`${baseUrl}/:id`, (request, response) => {
   response.status(204).end()
 })
 
-const generateId = () => {
-  const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0
-  return maxId + 1
-}
+// const generateId = () => {
+//   const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0
+//   return maxId + 1
+// }
 
-app.post(`${baseUrl}/:id`, (request, response) => {
+app.post(baseUrl, (request, response) => {
   const body = request.body
-  if (!body.content) {
+  if (!body.name) {
     return response.status(400).json({
       error: 'content missing',
     })
   }
 
-  const note = {
-    content: body.content,
-    important: body.important || false,
-    date: new Date(),
-    id: generateId(),
+  const person = {
+    id: Math.floor(Math.random() * 543634563563467567),
+    name: body.name,
+    number: body.number,
   }
 
-  persons = persons.concat(note)
+  persons = persons.concat(person)
 
-  response.json(note)
+  response.json(person)
 })
 
 const PORT = 3001

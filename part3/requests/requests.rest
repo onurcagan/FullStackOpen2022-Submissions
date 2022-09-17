@@ -1,0 +1,14 @@
+# Request to get all persons.
+GET http://localhost:3001/api/persons 
+
+
+
+###
+# Create a single person
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Onur",
+  "number": "598-569-5983"
+}
