@@ -1,11 +1,12 @@
+const { json } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 app.use(express.json())
 const baseUrl = '/api/persons'
-app.use(morgan('tiny'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 
-let persons = [
+let phonebook = [
   {
     id: 1,
     name: 'Arto Hellas',
@@ -27,24 +28,27 @@ let persons = [
     number: '39-23-6423122',
   },
 ]
+morgan.token('content', (request) => request.method === 'POST' && request.body.name && JSON.stringify(request.body))
 
 app.get('/info', (request, response) => {
   response.send(`
-  <div>Phonebook has info for ${persons.length} people.</div> 
+  <div>Phonebook has info for ${phonebook.length} people.</div> 
   <div>${new Date()}</div>`)
 })
 
 app.get('/', (request, response) => {
+  app.use(morgan('tiny', { stream: console.log }))
+
   response.send("<h1>What's up chump?</h1>")
 })
 
 app.get(baseUrl, (request, response) => {
-  response.json(persons)
+  response.json(phonebook)
 })
 
 app.get(`${baseUrl}/:id`, (request, response) => {
   const id = Number(request.params.id)
-  const person = persons.find((person) => person.id === id)
+  const person = phonebook.find((person) => person.id === id)
   if (person) {
     response.json(person)
   } else {
@@ -54,8 +58,8 @@ app.get(`${baseUrl}/:id`, (request, response) => {
 
 app.delete(`${baseUrl}/:id`, (request, response) => {
   const id = Number(request.params.id)
-  persons = persons.filter((person) => person.id !== id)
-  console.log(persons)
+  phonebook = phonebook.filter((person) => person.id !== id)
+  console.log(phonebook)
   response.status(204).end()
 })
 
@@ -72,7 +76,7 @@ app.post(baseUrl, (request, response) => {
     })
   }
 
-  if (persons.find((person) => person.name === body.name)) {
+  if (phonebook.find((person) => person.name === body.name)) {
     return response.status(400).json({ error: 'name must be unique' })
   }
 
@@ -82,7 +86,7 @@ app.post(baseUrl, (request, response) => {
     number: body.number,
   }
 
-  persons = persons.concat(person)
+  phonebook = phonebook.concat(person)
 
   response.json(person)
 })
