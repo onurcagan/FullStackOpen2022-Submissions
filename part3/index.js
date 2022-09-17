@@ -52,8 +52,8 @@ app.get(`${baseUrl}/:id`, (request, response) => {
 
 app.delete(`${baseUrl}/:id`, (request, response) => {
   const id = Number(request.params.id)
-  persons = persons.filter((note) => note.id !== id)
-
+  persons = persons.filter((person) => person.id !== id)
+  console.log(persons)
   response.status(204).end()
 })
 
