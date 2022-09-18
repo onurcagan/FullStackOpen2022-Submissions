@@ -1,9 +1,13 @@
 const { json } = require('express')
 const express = require('express')
 const morgan = require('morgan')
+
 const app = express()
-app.use(express.json())
+const cors = require('cors')
 const baseUrl = '/api/persons'
+
+app.use(cors())
+app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 
 let phonebook = [
@@ -59,14 +63,13 @@ app.get(`${baseUrl}/:id`, (request, response) => {
 app.delete(`${baseUrl}/:id`, (request, response) => {
   const id = Number(request.params.id)
   phonebook = phonebook.filter((person) => person.id !== id)
-  console.log(phonebook)
   response.status(204).end()
 })
 
-// const generateId = () => {
-//   const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0
-//   return maxId + 1
-// }
+const generateId = () => {
+  const maxId = phonebook.length > 0 ? Math.max(...phonebook.map((n) => n.id)) : 0
+  return maxId + 1
+}
 
 app.post(baseUrl, (request, response) => {
   const body = request.body
@@ -81,7 +84,7 @@ app.post(baseUrl, (request, response) => {
   }
 
   const person = {
-    id: Math.floor(Math.random() * 543634563563467567),
+    id: generateId(),
     name: body.name,
     number: body.number,
   }
