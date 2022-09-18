@@ -1,23 +1,23 @@
 import axios from 'axios'
-const serverUrl = 'http://localhost:3001/api/persons'
+const baseUrl = '/api/persons'
 
 export const getPeople = () => {
-  const request = axios.get(serverUrl)
+  const request = axios.get(baseUrl)
   return request.then((res) => res.data)
 }
 
 export const createNewPerson = (personObject) => {
-  return axios.post(serverUrl, personObject).catch((e) => console.error(e))
+  return axios.post(baseUrl, personObject).catch((e) => console.error(e))
 }
 
 export const deletePerson = (id) => {
-  axios.delete(`${serverUrl}/${id}`).catch((e) => {
+  axios.delete(`${baseUrl}/${id}`).catch((e) => {
     alert("seems we don't have this note so we can't delete it.")
     return console.error(e)
   })
 }
 
 export const updatePerson = (id, newPerson) => {
-  const request = axios.put(`${serverUrl}/${id}`, newPerson)
+  const request = axios.put(`${baseUrl}/${id}`, newPerson)
   return request.then((response) => response.data)
 }

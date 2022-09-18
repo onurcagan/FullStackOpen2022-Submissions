@@ -6,6 +6,7 @@ const app = express()
 const cors = require('cors')
 const baseUrl = '/api/persons'
 
+app.use(express.static('build'))
 app.use(cors())
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
@@ -41,8 +42,6 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/', (request, response) => {
-  app.use(morgan('tiny', { stream: console.log }))
-
   response.send("<h1>What's up chump?</h1>")
 })
 
