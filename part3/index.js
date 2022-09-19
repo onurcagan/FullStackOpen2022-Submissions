@@ -59,6 +59,16 @@ app.get(`${baseUrl}/:id`, (request, response) => {
   }
 })
 
+app.put(`${baseUrl}/:id`, (request, response) => {
+  const id = Number(request.params.id)
+  if (phonebook.some((person) => person.id === id)) {
+    const updatedPerson = request.body
+    phonebook.splice(id - 1, 1, updatedPerson)
+    return response.send(updatedPerson)
+  }
+  response.status(404).send('This person was deleted from the contacts list.')
+})
+
 app.delete(`${baseUrl}/:id`, (request, response) => {
   const id = Number(request.params.id)
   phonebook = phonebook.filter((person) => person.id !== id)

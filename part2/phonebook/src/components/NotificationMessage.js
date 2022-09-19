@@ -1,4 +1,4 @@
-export const NotificationMessage = ({ notificationMessage, errorMessage, setErrorMessage }) => {
+export const NotificationMessage = ({ notificationMessage, errorMessage, setErrorMessage, setNotificationMessage }) => {
   if (notificationMessage === null || errorMessage === null) {
     return null
   }
@@ -7,5 +7,7 @@ export const NotificationMessage = ({ notificationMessage, errorMessage, setErro
     setTimeout(() => setErrorMessage(''), 3000)
     return <div className="error">{errorMessage}</div>
   }
+
+  setTimeout(() => setNotificationMessage(''), 3000)
   return <div className="notification">{notificationMessage}</div>
 }
