@@ -10,8 +10,13 @@ export const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [newFilter, setNewFilter] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [notificationMessage, setNotificationMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null)
+
+  const sendNotification = (message) => {
+    setNotificationMessage(`${message}`)
+    setTimeout(() => setNotificationMessage(''), 3000)
+  }
 
   useEffect(() => {
     getPeople().then((person) => setPeople(person))
@@ -37,7 +42,7 @@ export const App = () => {
             getPeople().then((person) => setPeople(person)) // This is to refresh the list after realizing a contact was deleted from the server.
           })
 
-        setNotificationMessage(`User ${newName}'s contact details have been updated.`)
+        sendNotification(`User ${newName}'s contact details have been updated.`)
         setNewName('')
         setNewPhone('')
       }
@@ -53,15 +58,15 @@ export const App = () => {
     getPeople().then((person) => setPeople(person))
     setNewName('')
     setNewPhone('')
-    setNotificationMessage(`Added ${newName} to the phonebook.`)
-
-    setTimeout(() => setNotificationMessage(''), 3000)
+    sendNotification(`Added ${newName} to the phonebook.`)
   }
 
   const deleteButtonOnClick = (id) => {
     if (window.confirm('are you sure about this?')) {
       deletePerson(id)
       setPeople(people.filter((p) => p.id !== id))
+      setErrorMessage(`User ${newName} have been deleted.`)
+      setTimeout(() => setErrorMessage(''), 3000)
     }
     return
   }
@@ -73,12 +78,7 @@ export const App = () => {
     <div>
       <h2>Phonebook</h2>
       {(notificationMessage || errorMessage) && (
-        <NotificationMessage
-          notificationMessage={notificationMessage}
-          errorMessage={errorMessage}
-          setErrorMessage={setErrorMessage}
-          setNotificationMessage={setNotificationMessage}
-        />
+        <NotificationMessage notificationMessage={notificationMessage} errorMessage={errorMessage} />
       )}
       <Filter newFilter={newFilter} setNewFilter={setNewFilter} />
       <h3>Add a new Person</h3>

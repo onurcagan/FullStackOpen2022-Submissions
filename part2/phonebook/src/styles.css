@@ -5,7 +5,7 @@ html body {
 
 .error {
   color: red;
-  background: lightgrey;
+  background: gray;
   font-size: 20px;
   border-style: solid;
   border-radius: 5px;
