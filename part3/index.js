@@ -10,82 +10,59 @@ const baseUrl = '/api/persons'
 const Person = require('./models/person')
 
 app.use(express.static('build'))
-app.use(cors())
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
-
-// let phonebook = [
-//   {
-//     id: 1,
-//     name: 'Arto Hellas',
-//     number: '040-123456',
-//   },
-//   {
-//     id: 2,
-//     name: 'Ada Lovelace',
-//     number: '39-44-5323523',
-//   },
-//   {
-//     id: 3,
-//     name: 'Dan Abramov',
-//     number: '12-43-234345',
-//   },
-//   {
-//     id: 4,
-//     name: 'Mary Poppendieck',
-//     number: '39-23-6423122',
-//   },
-// ]
+app.use(cors())
 
 morgan.token('content', (request) => request.method === 'POST' && request.body.name && JSON.stringify(request.body))
 
-app.get('/info', (request, response) => {
-  const count = Person.count({}, (error, count) =>
+app.get('/info', (request, response, next) => {
+  const count = Person.count({}, (error, count) => {
     response.status(200).send(`
   <div>Phonebook has info for ${count} people.</div> 
-  <div>Request date: ${new Date()}</div>`),
-  ).catch((err) => `Some error happened, here's the message: ${err.message}`)
-})
-
-app.get(baseUrl, (request, response) => {
-  Person.find({}).then((persons) => {
-    response.status(200).json(persons)
+  <div>Request date: ${new Date()}</div>`)
+    next(error)
   })
 })
 
-app.get(`${baseUrl}/:id`, (request, response) => {
+app.get(baseUrl, (request, response, next) => {
+  Person.find({})
+    .then((persons) => {
+      response.status(200).json(persons)
+    })
+    .catch((error) => next(error))
+})
+
+app.get(`${baseUrl}/:id`, (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
       response.json(person)
     })
-    .catch((error) =>
-      response.status(404).send(`Couldn't fetch the contact with the given ID, here's the error: ${error.message}`),
-    )
+    .catch((error) => next(error))
 })
 
-app.put(`${baseUrl}/:id`, (request, response) => {
-  Person.findByIdAndUpdate(
-    request.params.id,
-    {
-      number: request.body.number,
-    },
-    (err, person) => {
-      if (err) {
-        response.status(404).send(`Couldn't update the contact with the given ID, here's the error: ${err.message}`)
-      } else response.status(204).send(`Updated user: ${person.name}`)
-    },
-  )
+app.put(`${baseUrl}/:id`, async (request, response, next) => {
+  const doc = await Person.findById(request.params.id)
+
+  if (!doc) {
+    return next('docNotFound')
+  }
+
+  doc.number = request.body.number
+  await doc.save()
 })
 
-app.delete(`${baseUrl}/:id`, (request, response) => {
+app.delete(`${baseUrl}/:id`, (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(response.status(204).end())
-    .catch((error) =>
-      response.status(404).send(`Couldn't delete the contact with the given ID, here's the error: ${error.message}`),
+    .then((result) =>
+      result === null
+        ? response.status(404).send(`The resource you're trying to delete doesn't exist.`)
+        : response.status(204).end(),
     )
+    .catch((error) => next(error))
 })
 
-app.post(baseUrl, (request, response) => {
+app.post(baseUrl, (request, response, next) => {
   const body = request.body
   if (!body.name || !body.number) {
     return response.status(400).json({
@@ -93,23 +70,17 @@ app.post(baseUrl, (request, response) => {
     })
   }
 
-  // if (
-  //   Person.find((persons) => {
-  //     console.log(persons)
-  //     persons.map((person) => person.name === body.name)
-  //   })
-  // ) {
-  //   return response.status(400).json({ error: 'name must be unique' })
-  // }
-
   const person = new Person({
     name: body.name,
     number: body.number,
   })
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson)
-  })
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson)
+    })
+    .catch((error) => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
@@ -117,6 +88,18 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  if (error.name === 'CastError' || error === 'docNotFound') {
+    return response
+      .status(400)
+      .send(`Couldn't fetch the contact with the given ID, please fix your ID formatting or provide an ID that exists..`)
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

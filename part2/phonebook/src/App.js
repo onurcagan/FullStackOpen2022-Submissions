@@ -38,7 +38,7 @@ export const App = () => {
         updatePerson(matchedExistingPerson.id, updatedPerson)
           .then(setPeople(people.map((person) => (person.id !== matchedExistingPerson.id ? person : updatedPerson))))
           .catch((e) => {
-            e.response.status === 404 && setErrorMessage(`User ${newName} has already been deleted from the server.`)
+            e.response.status === 400 && setErrorMessage(`User ${newName} has already been deleted from the server.`)
             getPeople().then((person) => setPeople(person)) // This is to refresh the list after realizing a contact was deleted from the server.
           })
 
