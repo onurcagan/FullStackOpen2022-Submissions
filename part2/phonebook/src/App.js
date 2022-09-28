@@ -18,6 +18,11 @@ export const App = () => {
     setTimeout(() => setNotificationMessage(''), 3000)
   }
 
+  const sendError = (message) => {
+    setErrorMessage(`${message}`)
+    setTimeout(() => setErrorMessage(''), 3000)
+  }
+
   useEffect(() => {
     getPeople().then((person) => setPeople(person))
   }, [])
@@ -26,9 +31,17 @@ export const App = () => {
     event.preventDefault()
 
     // Prevents the entry of empty names to the Phonebook.
-    if (newName === '') {
-      return
-    }
+    // if (!newName || !newPhone) {
+    //   setNewName('')
+    //   setNewPhone('')
+    //   if (!newName && !newPhone) {
+    //     return sendError(`Name and Number is missing.`)
+    //   }
+    //   if (!newName) {
+    //     return sendError(`Name is missing.`)
+    //   }
+    //   return sendError(`Number is missing`)
+    // }
 
     if (people.some((e) => e.name === newName)) {
       if (window.confirm(`${newName} is already added to the phonebook, would you like to update their phone number?`)) {
@@ -38,7 +51,9 @@ export const App = () => {
         updatePerson(matchedExistingPerson.id, updatedPerson)
           .then(setPeople(people.map((person) => (person.id !== matchedExistingPerson.id ? person : updatedPerson))))
           .catch((e) => {
-            e.response.status === 400 && setErrorMessage(`User ${newName} has already been deleted from the server.`)
+            e.response.status === 401 && sendError(e.response.data.error)
+            e.response.status === 400 && sendError(`User ${newName} has already been deleted from the server.`)
+            e.response.status === 404 && sendError(`Content missing, please fill the form properly.`)
             getPeople().then((person) => setPeople(person)) // This is to refresh the list after realizing a contact was deleted from the server.
           })
 
@@ -54,7 +69,12 @@ export const App = () => {
       number: newPhone,
     }
 
-    await createNewPerson(personObject).then(setPeople(people.concat(personObject))) // waiting for post request to finish before using getPeople to fetch id for the latest entry.
+    await createNewPerson(personObject)
+      .then(setPeople(people.concat(personObject)))
+      .catch((e) => {
+        console.log(e.response)
+        sendError(e.response.data.error)
+      })
     getPeople().then((person) => setPeople(person))
     setNewName('')
     setNewPhone('')
@@ -65,8 +85,7 @@ export const App = () => {
     if (window.confirm('are you sure about this?')) {
       deletePerson(id)
       setPeople(people.filter((p) => p.id !== id))
-      setErrorMessage(`User ${newName} have been deleted.`)
-      setTimeout(() => setErrorMessage(''), 3000)
+      sendError(`User ${people.find((p) => p.id === id).name} has been deleted.`)
     }
     return
   }

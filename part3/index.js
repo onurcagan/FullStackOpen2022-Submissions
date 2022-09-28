@@ -49,7 +49,7 @@ app.put(`${baseUrl}/:id`, async (request, response, next) => {
   }
 
   doc.number = request.body.number
-  await doc.save()
+  await doc.save().catch((error) => next(error))
 })
 
 app.delete(`${baseUrl}/:id`, (request, response, next) => {
@@ -63,16 +63,11 @@ app.delete(`${baseUrl}/:id`, (request, response, next) => {
 })
 
 app.post(baseUrl, (request, response, next) => {
-  const body = request.body
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'information missing',
-    })
-  }
+  const { name, number } = request.body
 
   const person = new Person({
-    name: body.name,
-    number: body.number,
+    name: name,
+    number: number,
   })
 
   person
@@ -94,6 +89,8 @@ const errorHandler = (error, request, response, next) => {
     return response
       .status(400)
       .send(`Couldn't fetch the contact with the given ID, please fix your ID formatting or provide an ID that exists..`)
+  } else if (error.name === 'ValidationError') {
+    return response.status(401).json({ error: error.message })
   }
 
   next(error)

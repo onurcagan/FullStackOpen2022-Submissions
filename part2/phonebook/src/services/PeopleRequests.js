@@ -7,13 +7,13 @@ export const getPeople = () => {
 }
 
 export const createNewPerson = (personObject) => {
-  return axios.post(baseUrl, personObject).catch((e) => console.error(e))
+  return axios.post(baseUrl, personObject)
 }
 
 export const deletePerson = (id) => {
   axios.delete(`${baseUrl}/${id}`).catch((e) => {
     alert("seems we don't have this note so we can't delete it.")
-    return console.error(e)
+    return e.response.status
   })
 }
 
