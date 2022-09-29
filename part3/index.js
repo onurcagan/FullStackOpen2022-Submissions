@@ -36,7 +36,7 @@ app.get(baseUrl, (request, response, next) => {
 app.get(`${baseUrl}/:id`, (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
-      response.json(person)
+      response.status(200).json(person)
     })
     .catch((error) => next(error))
 })
@@ -50,6 +50,7 @@ app.put(`${baseUrl}/:id`, async (request, response, next) => {
 
   doc.number = request.body.number
   await doc.save().catch((error) => next(error))
+  response.status(200).send(doc)
 })
 
 app.delete(`${baseUrl}/:id`, (request, response, next) => {
@@ -65,6 +66,12 @@ app.delete(`${baseUrl}/:id`, (request, response, next) => {
 app.post(baseUrl, (request, response, next) => {
   const { name, number } = request.body
 
+  Person.findById(request.params.id).then((person) => {
+    if (person?.name === name) {
+      next('postExistingName')
+    }
+  })
+
   const person = new Person({
     name: name,
     number: number,
@@ -73,7 +80,7 @@ app.post(baseUrl, (request, response, next) => {
   person
     .save()
     .then((savedPerson) => {
-      response.json(savedPerson)
+      response.status(200).json(savedPerson)
     })
     .catch((error) => next(error))
 })
@@ -91,6 +98,8 @@ const errorHandler = (error, request, response, next) => {
       .send(`Couldn't fetch the contact with the given ID, please fix your ID formatting or provide an ID that exists..`)
   } else if (error.name === 'ValidationError') {
     return response.status(401).json({ error: error.message })
+  } else if (error.name === 'postExistingName') {
+    return response.status(405).json({ error: 'POST request attempts to change existing user.' })
   }
 
   next(error)
