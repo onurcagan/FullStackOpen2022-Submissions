@@ -22,7 +22,7 @@ const personSchema = new mongoose.Schema({
     validate: {
       validator: (v) => {
         if (v.includes('-')) {
-          return /^\d{2,3}-\d+/.test(v)
+          return /^\d{2,3}-\d+$/.test(v)
         }
         return /^\d+$/.test(v)
       },
