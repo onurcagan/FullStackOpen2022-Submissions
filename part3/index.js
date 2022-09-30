@@ -1,8 +1,6 @@
 require('dotenv').config()
-const { json } = require('express')
 const express = require('express')
 const morgan = require('morgan')
-const mongoose = require('mongoose')
 
 const app = express()
 const cors = require('cors')
@@ -17,7 +15,7 @@ app.use(cors())
 morgan.token('content', (request) => request.method === 'POST' && request.body.name && JSON.stringify(request.body))
 
 app.get('/info', (request, response, next) => {
-  const count = Person.count({}, (error, count) => {
+  Person.count({}, (error, count) => {
     response.status(200).send(`
   <div>Phonebook has info for ${count} people.</div> 
   <div>Request date: ${new Date()}</div>`)
@@ -107,6 +105,7 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler)
 
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
